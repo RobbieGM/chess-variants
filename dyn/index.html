@@ -1,0 +1,31 @@
+<article>
+	<h2>Watch Games</h2>
+	<table style='width: 100%' class='clickable-rows'>
+	<tbody id='games-tbody'>
+	</tbody>
+	</table>
+</article>
+<article>
+	<h2>Game Offers</h2>
+	<table style='width: 100%' class='clickable-rows'>
+		<tbody id='offers-tbody'>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan='4' class='wrapper'>
+					<div class='flex-buttons'>
+						<button onclick='createGame()'>Create game...</button>
+						<button onclick='createGame(true)'>Challenge player...</button>
+					</div>
+				</td>
+			</tr>
+		</tfoot>
+		</table>
+</article>
+<article id='chat-card'>
+	<h2>Chat</h2>
+	<div id='msg-box' class='allow-scroll'>
+	</div>
+	<div id='spacer' style='height: 38px'/>
+	<input id='msg-input' type='text' placeholder='Message people on server'/>
+</article>

@@ -1,0 +1,3 @@
+(solved) Flex items don't wrap in Safari
+(unfixable) Custom scrollbar shows as default in FF
+Transition on nav links flickers in Chrome (display: inline fixes but ruins other styles)

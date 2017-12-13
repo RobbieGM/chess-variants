@@ -1,0 +1,29 @@
+<table class='splitter-table' cellspacing='15px'>
+	<tr>
+		<td style='position: relative;' z='1'>
+			<div class='inner-container-absolute allow-scroll' id='msg-box' style='padding: 15px; bottom: 38px'>
+			</div>
+			<input id='msg-input' type='text' placeholder='Instant message opponent'/>
+		</td>
+		<td id='chess-board-container'>
+			<canvas id='chess-board' z='2'></canvas>
+		</td>
+		<td z='1' class='allow-scroll' style='padding: 0; position: relative'>
+			<!-- Add vertically aligned (lichess-style) player data stuff. -->
+			<h3 id='opponent-username'>{opponent_username}</h3>
+			<div id='game-buttons'>
+				<button id='resign'>Resign</button>
+				<button id='offer-takeback'>Offer takeback</button>
+				<button id='rotate-board'>Rotate board</button>
+				<button id='offer-draw'>Offer draw</button>
+			</div>
+			<h3 id='your-username'>{username}</h3>
+		</td>
+	</tr>
+</table>
+<var style='display:none' id='white-player'>{white_player}</var>
+<var style='display:none' id='black-player'>{black_player}</var>
+<var style='display:none' id='username'>{username}</var>
+<var style='display:none' id='opponent-username'>{opponent_username}</var>
+<var style='display:none' id='spectating'>{is_spectating}</var>
+<script src='/static/game.js'></script>
