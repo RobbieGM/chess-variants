@@ -638,7 +638,7 @@ cfg = {'/static': {
 #        'tools.caching.on': False,
 #    },
     'global': {
-        'server.socket_host': '0.0.0.0',
+        'server.socket_host': '127.0.0.1',
         'server.socket_port': (int(argv[len(argv) - 1]) if argv[len(argv) - 1].isdigit() else 80),
         'response.timeout': 6000,  # ms
         'error_page.404': error_404,
