@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<title>Chessvars</title>
+	<!--script src='/static/custom-loading.js'></script-->
+	<script>
+	addEventListener('load', function() {
+		document.getElementById('is_admin').onchange = function() {
+			if (this.checked) {
+				document.getElementById('password').classList.add('show');
+			}else{
+				document.getElementById('password').classList.remove('show');
+			}
+		};
+	});
+	</script>
+	<link rel='shortcut icon' type='image/x-icon' href='/favicon.ico?v=2'/>
+	<link rel='icon' type='image/x-icon' href='/favicon.ico?v=2'/>
+	<meta name='viewport' content='width=device-width,user-scalable=no'/>
+	<meta name='theme-color' content='#990012'/>
+	<meta name='mobile-web-app-capable' content='yes'/>
+	<meta name='apple-mobile-web-app-capable' content='yes'/>
+	<meta name='apple-mobile-web-app-status-bar-style' content='black'/>
+	<link rel='apple-touch-icon' sizes='192x192' href='/static/logo-192x192.png'/>
+	<link rel='icon' sizes='192x192' href='/static/logo-192x192.png'/>
+	<meta charset='utf-8'/>
+	<style>
+	#main-card {
+		text-align: center;
+	}
+	#main-card ul {
+		list-style-position: inside;
+		padding-left: 0;
+	}
+	</style>
+	<link rel='stylesheet' type='text/css' href='/static/main.css'/>
+	<script src='/static/main.js'></script>
+</head>
+<body>
+	<div id='screen-flash-circle'></div>
+	<div id='modal-overlay' class='inactive'></div>
+	<div id='modal-dialog' class='inactive' z='5'>
+		<div id='modal-dialog-wrapper'>
+			<div id='modal-dialog-content'></div>
+			<table id='modal-dialog-dismiss-buttons'><tbody><tr id='modal-dialog-dismiss-row'><td>OK</td></tr></tbody></table>
+		</div>
+	</div>
+	<header>
+		<a href='/'><img src='/static/chessvars-logo.svg' id='logo-img'/></a><a href='/settings'>Settings</a><a href='/about'>About</a>
+	</header>
+	<main>
+		<article id='main-card'>
+			<h2>One game, many variants</h2>
+			<form action='/choose_username' method='POST'>
+				<ul>
+					<li>Get into the game instantly by choosing your username now, no login required.</li>
+					<li>Easily challenge your friends with otherwise normal game controls.</li>
+					<li>Over 10 different chess variants, coming soon!</li>
+				</ul>
+				<input type='text' name='username' autofocus required placeholder='johndoe123' maxlength='20'/><div style='visibility:hidden;height:0;margin:0;'>&nbsp;</div><!-- << creates a zero-space line break -->
+				<input type='text' name='settings' style='display:none' width='20px'/>
+				<input type='password' name='password' id='password' class='hidden_password' placeholder='aDm1n-p@s$w0RD'/><div style='visibility:hidden;height:0;margin:0;'>&nbsp;</div>
+				<input type='checkbox' name='is_admin' id='is_admin'/><label for='is_admin'>Log in as admin</label><br/>
+				<p>By logging in, you confirm that you are agreeing to the <a href='/terms'>Terms and Conditions</a>.</p>
+				<button type='submit' id='choose_username'>Join</button>
+			</form>
+		</article>
+	</main>
+</body>
+</html>
