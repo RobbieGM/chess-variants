@@ -73,6 +73,7 @@ function dismissAlert(result) {
 	if (!noClear) { onAlertDismiss = function(){}; }
 }
 function screenFlash() {
+	navigator.vibrate(50);
 	var flash = document.getElementById('screen-flash-circle');
 	flash.classList.add('animated');
 	setTimeout(function() {
@@ -117,6 +118,7 @@ function createGame(isChallenge) {
 	showAlert(text, ['Cancel', 'Create game'], 'Create game');
 	onAlertDismiss = function(result) {
 		if (result == 'Create game') {
+			screenFlash();
 			var variant = document.getElementById('variant').value;
 			var minutes = document.getElementById('minutes').value;
 			var delay   = document.getElementById('delay').value;
@@ -215,6 +217,7 @@ socket.onmessage = function(received) {
 		showAlert(msgargs[1])
 	}
 	if (msgargs[0] == 'gameaccepted' || msgargs[0] == 'gameready') {
+		screenFlash();
 		location.href = '/g/'+msgargs[1];
 	}
 	if (msgargs[0] == 'gameconclusion') {

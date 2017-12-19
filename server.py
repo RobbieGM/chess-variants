@@ -32,6 +32,7 @@ users = {}
 game_offers = {}
 games = {}
 global_messages = []
+cwd = os.getcwd()
 # game_page = open('dyn/game.html').read()
 # choose_username_html = open('dyn/choose_username.html').read()
 # terms_and_conditions = open('dyn/terms.html').read()
@@ -93,8 +94,7 @@ def main_page_wrap(html, css='', split_mode=False):
         arr = html.split('{head_body_split}', 1)
         return DYNAMIC_HTML['wrapper'].format(head=arr[0], body=arr[1])
     else:
-        return DYNAMIC_HTML['wrapper'].format(
-            body=html, head='<style>' + css + '</style>')
+        return DYNAMIC_HTML['wrapper'].format(body=html, head='<style>' + css + '</style>')
 
 
 def username_required(func):
@@ -151,19 +151,17 @@ class Game(object):
         self.white_player = white_player
         self.black_player = black_player
         self.variant = variant
-        #self.minutes = minutes
+        self.minutes = minutes
         self.delay = delay
         self.board = chess.Board() # REVISE: add variants
         self.msgs = []
         self.spectator_msgs = []
         self.takeback_offeror = ''
         self.moves = []
-        self.draw_offeror = ''
+        self.draw_offeror = None
         self.last_move_date = datetime.now()
         self.seconds_remaining_white = minutes * 60
         self.seconds_remaining_black = minutes * 60
-        #self.timer = Timer(self.white_seconds_remaining)
-        #self.timer.daemon = True
 
     def conclude(self, winner, reason=None):
         User.broadcast_to('ongoinggamefinished:' + self.game_id, 'all', role='main')
@@ -470,6 +468,9 @@ class MainWebSocket(WebSocket):
                     self.user.silence(1.5)
 
             def game(cmd, *args):
+                if not self.user.game:
+                    return
+
                 def move(m):
                     g = self.user.game
                     if (g.board.turn == chess.WHITE and self.user is g.white_player) or (
@@ -482,16 +483,21 @@ class MainWebSocket(WebSocket):
                         self.emit('invalidmove')
 
                 def message():
-                    pass
+                    self.user.game.messages
 
                 def takeback():
                     pass
 
                 def draw():
-                    pass
+                    if self.user.game.draw_offeror is self.user.opponent:
+                        self.user.game.conclude(None, 'agreement')
+                    else:
+                        User.broadcast_to('drawoffer', [self.user.opponent], role=('game', self.user.game.game_id))
 
                 def resign():
-                    pass
+                    user_is_white == self.user.game.white_player is self.user
+                    self.user.game.conclude(chess.BLACK if user_is_white else chess.WHITE, 'resignation')
+
                 sublocals = locals()
                 sublocals = {func_name: func for (func_name, func) in sublocals.items() if callable(func)}
                 if cmd in sublocals:
@@ -519,7 +525,7 @@ class Root(object):
     @cp.expose
     @username_required
     def index(self):
-        return main_page_wrap(DYNAMIC_HTML['index'])
+        return cp.lib.static.serve_file(cwd + '/static/index.html')
 
     @cp.expose
     def choose_username(self, **request_params):
@@ -530,18 +536,19 @@ class Root(object):
                     users[session_token].logout()
             cp.response.cookie['session_token'] = 'expires_now'
             cp.response.cookie['session_token']['expires'] = 0
-            return main_page_wrap(DYNAMIC_HTML['choose_username'], split_mode=True)
+
+            return cp.lib.static.serve_file(cwd + '/static/choose_username.html')
+            #return main_page_wrap(DYNAMIC_HTML['choose_username'], split_mode=True)
         elif cp.request.method == 'POST':
             if not request_params['username']:
                 raise cp.HTTPError(400)
-            uname = escape(request_params['username'])  # xss protection
+            uname = escape(request_params['username']) # xss protection
             reject = (
                 (request_params['settings'], 'You don\'t appear to be human.'),
                 (len(uname) > 20, 'Username is too long (over 20 characters).'),
                 (uname in [users[sestok].username for sestok in users],
                  'Another user is already using this username.'),
-                (not re.search(r'^[a-zA-Z0-9\-_\s\.]+$', uname) or uname.isspace(),
-                 'Username must be non-space and may only contain letters, numbers, dashes, spaces, periods, and underscores.')
+                (not re.search(r'^[a-zA-Z0-9\-_\s\.]+$', uname) or uname.isspace(), 'Username must be non-space and may only contain letters, numbers, dashes, spaces, periods, and underscores.')
             )
             for condition in reject:
                 if condition[0]:
@@ -623,12 +630,13 @@ def error_404(status, message, traceback, version):
 cfg = {'/static': {
     'tools.staticdir.on': True,
     'tools.staticdir.dir': 'static',
-    'tools.caching.on': True,
-    'tools.caching.delay': 30,
-},
+    },
     '/': {
-        'tools.staticdir.root': os.getcwd(),
-},
+        'tools.staticdir.root': cwd,
+    },
+#    '/choose_username': {
+#        'tools.caching.on': False,
+#    },
     'global': {
         'server.socket_host': '0.0.0.0',
         'server.socket_port': (int(argv[len(argv) - 1]) if argv[len(argv) - 1].isdigit() else 80),
@@ -638,17 +646,24 @@ cfg = {'/static': {
     #       'log.error_file': '/tmp/cp-error.log',
         'log.screen': True,
         'tools.trailing_slash.on': False,
+        'tools.caching.on': False,
+        'tools.gzip.on': True,
+        'tools.expires.on': True,
+        'tools.expires.secs': 60 * 60 * 24 * 5,
     #       'server.ssl_certificate': 'certificate.crt',
     #       'server.ssl_private_key': 'private.key'
-},
+    },
     '/socket': {
         'tools.websocket.on': True,
-        'tools.websocket.handler_cls': MainWebSocket
-},
+        'tools.websocket.handler_cls': MainWebSocket,
+        'tools.caching.on': False,
+        'tools.gzip.on': False,
+        'tools.expires.on': False,
+    },
     '/favicon.ico': {
         'tools.staticfile.on': True,
-        'tools.staticfile.filename': os.getcwd() + '/favicon.ico'
-}
+        'tools.staticfile.filename': cwd + '/favicon.ico'
+    }
 }
 
 WebSocketPlugin(cp.engine).subscribe()

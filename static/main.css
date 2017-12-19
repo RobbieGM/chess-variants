@@ -55,7 +55,7 @@ html {
 
 #screen-flash-circle {
 	position: fixed;
-	background: var(--accent-light);
+	background: transparent;
 	width: 1px;
 	height: 1px;
 	left: 50%;
