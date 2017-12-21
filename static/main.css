@@ -97,6 +97,7 @@ html {
 
 #nav-menu {
 	position: fixed;
+	overflow-y: auto;
 	height: 100%;
 	top: 0;
 	bottom: 0;
@@ -107,13 +108,40 @@ html {
 	background: var(--bkg-tertiary);
 	z-index: 1000;
 	transition: transform 0.2s;
-	transform: translate(-100%);
+	will-change: transform;
+	transform: translate(-100%) translateZ(0);
 	transition-timing-function: ease-in;
+	box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
+	display: flex;
+	flex-direction: column;
 }
 
 #nav-menu.active {
-	transform: translate(0);
+	transform: translate(0) translateZ(0);
 	transition-timing-function: ease-out;
+}
+
+#nav-menu a {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	margin: 0;
+	width: 100%;
+	font-size: 1.5rem;
+	box-shadow: none;
+	text-align: center;
+	background: var(--accent-light);
+	color: var(--text);
+	box-sizing: border-box;
+	padding: 0.2rem;
+	transition-duration: 0.3s;
+}
+
+#nav-menu a:active {
+	transition-duration: 0s;
+	background: var(--accent-dark);
 }
 
 #msg-box {

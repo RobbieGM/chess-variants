@@ -20,8 +20,8 @@ function validateUsername(name) {
 }
 (function initLocalStorage() {
 	var defaultLS = {
-		darkSquareColor: "#555555",
-		lightSquareColor: "#EEEEEE"
+		darkSquareColor: '#555555',
+		lightSquareColor: '#EEEEEE'
 	};
 	for (key in defaultLS) {
 		if (localStorage[key] === undefined || localStorage[key] === null) {
@@ -47,7 +47,17 @@ addEventListener('load', function() {
 			}
 		};
 	}
-	// End onload
+	var navMenu = document.getElementById('nav-menu');
+	for (var i = 0; i < navMenu.children.length; i++) {
+		navMenu.children[i].onclick = function(e) {
+			e.preventDefault();
+			navMenu.classList.remove('active');
+			var elt = this;
+			setTimeout(function() {
+				location.href = elt.href;
+			}, 1000 * 0.2);
+		};
+	}
 });
 function showAlert(content, buttons, defaultButton) {
 	if (!buttons || buttons.length === 0) { buttons = ['OK']; defaultButton = 'OK';}
