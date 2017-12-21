@@ -50,16 +50,17 @@ addEventListener('load', function() {
 	// End onload
 });
 function showAlert(content, buttons, defaultButton) {
-	if (!buttons || buttons.length === 0) { buttons = ["OK"]; defaultButton = "OK";}
-	document.getElementById("modal-dialog").className = "active";
-	document.getElementById("modal-overlay").className = "active";
-	document.getElementById("modal-dialog-content").innerHTML = content;
-	var html = "";
+	if (!buttons || buttons.length === 0) { buttons = ['OK']; defaultButton = 'OK';}
+	document.getElementById('modal-dialog').className = 'active';
+	document.getElementById('modal-overlay').className = 'active';
+	document.getElementById('modal-overlay').classList.remove('show-top');
+	document.getElementById('modal-dialog-content').innerHTML = content;
+	var html = '';
 	for (var i=0;i<buttons.length;i++) {
-		html += "<td "+(defaultButton==buttons[i]?" class='default-button'":"")+">"+buttons[i]+"</td>"
+		html += '<td '+(defaultButton==buttons[i] ? 'class="default-button"' : '')+'>'+buttons[i]+'</td>'
 	}
-	document.getElementById("modal-dialog-dismiss-row").innerHTML = html;
-	var CVAlertButtons = document.getElementById("modal-dialog-dismiss-row").childNodes;
+	document.getElementById('modal-dialog-dismiss-row').innerHTML = html;
+	var CVAlertButtons = document.getElementById('modal-dialog-dismiss-row').childNodes;
 	for (var i=0;i<CVAlertButtons.length;i++) {
 		CVAlertButtons[i].onclick = function() {
 			dismissAlert(this.innerHTML);
@@ -67,8 +68,8 @@ function showAlert(content, buttons, defaultButton) {
 	}
 }
 function dismissAlert(result) {
-	document.getElementById("modal-dialog").className = "inactive";
-	document.getElementById("modal-overlay").className = "inactive";
+	document.getElementById('modal-dialog').className = 'inactive';
+	document.getElementById('modal-overlay').className = 'inactive';
 	var noClear = onAlertDismiss(result);
 	if (!noClear) { onAlertDismiss = function(){}; }
 }
@@ -79,6 +80,18 @@ function screenFlash() {
 	setTimeout(function() {
 		flash.classList.remove('animated');
 	}, 1000);
+}
+function toggleHamburgerMenu() {
+	var navMenu = document.getElementById('nav-menu');
+	var modalOverlay = document.getElementById('modal-overlay');
+	if (navMenu.classList.contains('active')) {
+		navMenu.classList.remove('active');
+		modalOverlay.classList.remove('active');
+	} else {
+		navMenu.classList.add('active');
+		modalOverlay.classList.add('show-top');
+		modalOverlay.classList.add('active');
+	}
 }
 function createGame(isChallenge) {
 	var text = "\

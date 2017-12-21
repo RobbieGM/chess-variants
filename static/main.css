@@ -95,6 +95,27 @@ html {
 	height: 2em;
 }
 
+#nav-menu {
+	position: fixed;
+	height: 100%;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	min-width: 218px;
+	width: 35%;
+	max-width: calc(100% - 62px);
+	background: var(--bkg-tertiary);
+	z-index: 1000;
+	transition: transform 0.2s;
+	transform: translate(-100%);
+	transition-timing-function: ease-in;
+}
+
+#nav-menu.active {
+	transform: translate(0);
+	transition-timing-function: ease-out;
+}
+
 #msg-box {
 	padding: 15px;
 	margin: -15px;
@@ -103,45 +124,6 @@ html {
 	-webkit-user-select: text;
 }
 
-.navicon-button {
-	display: inline-block;
-	position: relative;
-	padding: 2px;
-	transition: 0.25s;
-	user-select: none;
-	-webkit-user-select: none;
-}
-.navicon-button .navicon:before, .navicon-button .navicon:after {
-	transition: 0.25s;
-}
-#option-icon-container:hover .navicon-button {
-	transition: 0.5s;
-}
-#option-icon-container:hover .navicon-button .navicon:before, #option-icon-container:hover .navicon-button .navicon:after {
-	transition: 0.25s;
-}
-.navicon {
-	position: relative;
-	width: 2.5em;
-	height: 0.3125rem;
-	background: white;
-	transition: 0.5s;
-}
-.navicon:before, .navicon:after {
-	display: block;
-	content: '';
-	height: .3125rem;
-	width: 2.5rem;
-	background: white;
-	position: absolute;
-	transition: 0.5s 0.25s;
-}
-.navicon:before {
-	top: .625rem;
-}
-.navicon:after {
-	top: -.625rem;
-}
 .message-sender {
 	color: var(--accent-light);
 }
@@ -281,9 +263,9 @@ button.no-scale:active {
 
 header {
 	font-family: 'Open Sans', sans-serif;
-	position: relative;
 	box-shadow: 0 4px 5px 2px rgba(0, 0, 0, 0.4);
 	background: var(--bkg-secondary);
+	height: 62px;
 }
 
 header a {
@@ -456,12 +438,14 @@ form input, form button {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	width:100%;
-	height:100%;
+	width: 100%;
 	z-index: 999;
 	background: var(--bkg-tertiary);
 	opacity: 0;
-	transition-duration: 0.3s;
+	transition: opacity 0.3s, visibility 0.3s;
+}
+#modal-overlay.show-top {
+	top: 62px;
 }
 #modal-overlay.active {
 	visibility: visible;
@@ -580,17 +564,6 @@ table.clickable-rows tr.owned {
 	margin: 5px;
 }
 
-.wrapper {
-	position: relative;
-}
-.wrapper > * {
-	position: relative;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-}
-
 #chess-board {
 	position: absolute;
 	top: 0;
@@ -699,7 +672,6 @@ article {
 	padding: calc(5px + 2vw);
 	margin: 2vw;
 	flex: 1;
-	position: relative;
 	z-index: 2;
 	background: var(--bkg-secondary);
 	box-shadow: 0 4px 5px 2px rgba(0, 0, 0, 0.4);
