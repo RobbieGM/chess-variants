@@ -52,6 +52,10 @@ html, body {
 html {
 	height: 100%;
 }
+body {
+	min-height: 100%;
+	position: relative;
+}
 
 #screen-flash-circle {
 	position: fixed;
@@ -105,7 +109,7 @@ html {
 	min-width: 218px;
 	width: 35%;
 	max-width: calc(100% - 62px);
-	background: var(--bkg-tertiary);
+	background: var(--accent-dark);
 	z-index: 1000;
 	transition: transform 0.2s;
 	will-change: transform;
@@ -122,12 +126,15 @@ html {
 	transition-timing-function: ease-out;
 }
 
+#nav-menu a:first-child {
+	margin: 0;
+}
 #nav-menu a {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	margin: 0;
+	margin: 10px 0 0 0;
 	width: 100%;
 	font-size: 1.5rem;
 	box-shadow: none;
@@ -458,14 +465,14 @@ form input, form button {
 	filter: blur(2px);
 }*/
 #modal-overlay {
-	position: fixed;
+	position: absolute;
 	display: block;
 	visibility: hidden;
 	opacity: 0;
 	top: 0;
 	left: 0;
 	right: 0;
-	bottom: 0;
+	height: 100%;
 	width: 100%;
 	z-index: 999;
 	background: var(--bkg-tertiary);
@@ -474,6 +481,7 @@ form input, form button {
 }
 #modal-overlay.show-top {
 	top: 62px;
+	height: calc(100% - 62px);
 }
 #modal-overlay.active {
 	visibility: visible;
