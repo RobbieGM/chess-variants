@@ -126,12 +126,16 @@ class GameOffer(object):
     instances = game_offers
     primary_key = 'game_id'
 
-    def __init__(self, offered_by, variant, minutes, delay, play_as):
+    def __init__(self, offered_by, variant, minutes, delay, play_as, challengee=None):
         self.offered_by = offered_by
         self.variant = variant
         self.minutes = minutes
         self.delay = delay
         self.play_as = play_as
+        self.challengee = challengee
+
+    def is_visible_to(self, user):
+        return self.challengee is user or self.challengee is None
 
     def delete(self):
         User.broadcast_to(['withdrawgame', self.game_id], 'all', role='main')
@@ -373,15 +377,19 @@ class MainWebSocket(WebSocket):
             def setrole(*role):
                 self.role = tuple(role)
 
-            def creategame(variant, mins, secs, color):
+            def creategame(variant, mins, secs, color, challengee=None):
                 if variant not in LEGAL_VARIANT_LIST:
                     return
                 if self.user.game_id in games:
                     self.emit('showmessage', '<h3>You are already in a game</h3><p>Please finish the game you are in before you create another game.</p>')
                 else:
-                    variant, mins, secs, color = msg_params[1:]
-                    offer = GameOffer(self.user, variant, mins, secs, color)
-                    User.broadcast_to(['gameoffer', self.user.username, READABLE_VARIANTS[variant], mins, secs, color, offer.game_id], 'all', role='main', from_token=self.user.session_token, signify_owned=True)
+                    try:
+                        offer = GameOffer(self.user, variant, mins, secs, color, User.get_users_where(username=challengee)[0])
+                    except IndexError:
+                        self.emit('showmessage', '<h3>The user you challenged doesn\'t exist</h3><p>You may have mistyped the challengee\'s username, or they may have logged out.</p>')
+                        return
+                    recipients = challengee
+                    User.broadcast_to(['gameoffer', self.user.username, READABLE_VARIANTS[variant], mins, secs, color, offer.game_id], recipients, role='main', from_token=self.user.session_token, signify_owned=True)
 
             def get(which, *args):
                 if which == 'games':
@@ -395,26 +403,22 @@ class MainWebSocket(WebSocket):
                     for game_id in game_offers:
                         g = game_offers[game_id]
                         owned = 'owned' if g.offered_by is self.user else 'foreign'
-                        self.emit('gameoffer', g.offered_by.username, READABLE_VARIANTS[g.variant], g.minutes, g.delay, g.play_as, game_id, owned)
+                        if g.is_visible_to(self.user):
+                            self.emit('gameoffer', g.offered_by.username, READABLE_VARIANTS[g.variant], g.minutes, g.delay, g.play_as, game_id, owned)
                 elif which == 'fen':
                     if args[0] in games:
                         game_id = args[0]
                         fen = games[game_id].board.fen()
                         self.emit('fen', fen)
                     else:
-                        self.emit('showmessage',
-                                  '<h2>This game doesn\'t exist anymore.</h2>')
+                        self.emit('showmessage', '<h2>This game doesn\'t exist anymore.</h2>')
 
             def acceptgame(offer_id):
                 if offer_id not in game_offers:
-                    self.emit(
-                        'showmessage',
-                        '<h3>That game offer is gone</h3><p>The game offer you accepted doesn\'t exist anymore.</p>')
+                    self.emit('showmessage', '<h3>That game offer is gone</h3><p>The game offer you accepted doesn\'t exist anymore.</p>')
                     return
                 if self.user.game_id in games:
-                    self.emit(
-                        'showmessage',
-                        '<h3>You are already in a game</h3><p>Please finish the game you are in before you accept another game.')
+                    self.emit('showmessage', '<h3>You are already in a game</h3><p>Please finish the game you are in before you accept another game.')
                     return
 
                 if game_offers[offer_id].offered_by is self.user:
@@ -556,18 +560,6 @@ class Root(object):
             raise cp.HTTPRedirect('/')
         else:
             raise cp.HTTPError(405)
-
-    @cp.expose
-    def test(self):
-        return main_page_wrap('''<article>
-            <input type="number" id="duration" min="0" max="100" value="50"/><br/>
-            <button onclick="vibrate()">OK</button>
-            <script>
-            vibrate = () => {
-                navigator.vibrate(parseInt(document.getElementById("duration").value));
-            };
-            </script>
-            </article>''')
 
     @cp.expose
     @username_required

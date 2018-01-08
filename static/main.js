@@ -1,6 +1,3 @@
-//console.log("%cCaution", "font: bold 35pt sans-serif; color: red;");
-//console.log("%cEven though we use a temporary username system and there is not much to lose (e.g., account passwords), pasting text here may give scammers or hackers access to your Chessvars in-browser settings or worse your session id. Your session id could give them the ability to play your games or send messages as 'you'.", "font: 12pt georgia, serif;");
-
 function validateUsername(name) {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/validate_username?name='+name, false);
@@ -155,7 +152,7 @@ function createGame(isChallenge) {
 				var playerToChallenge = document.getElementById('to-challenge');
 				if (playerToChallenge && /^[a-zA-Z0-9\s]+$/.test(playerToChallenge.value)) {
 					playerToChallenge = playerToChallenge.value;
-					socket.send('challengeplayer:'+playerToChallenge+':'+variant+':'+minutes+':'+delay+':'+playAs)
+					socket.send('creategame:'+variant+':'+minutes+':'+delay+':'+playAs+':'+playerToChallenge)
 				}else{
 					showAlert('<h3>Invalid input</h3><p>Player to challenge field is empty or is an invalid username.</p>');
 				}
