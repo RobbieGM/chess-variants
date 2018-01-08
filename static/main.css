@@ -7,14 +7,20 @@ https://www.mozilla.org/en-US/styleguide/websites/sandstone/colors/
 
 * {
 	-webkit-tap-highlight-color: transparent;
+	outline: none;
+}
+::moz-focusring {
+	color: transparent;
+	text-shadow: none;
 }
 
 :root {
 	--text: #cfcfcf;
 	--bkg-primary: #142128;
 	--bkg-secondary: #20343e;
-	--bkg-tertiary: #365463;
-	--bkg-quaternary: #476b7b;
+	--bkg-tertiary: #355464;
+	--bkg-quaternary: #406577;
+
 	--accent-dark: #990012;
 	--accent-light: #eb0029;
 }
@@ -45,16 +51,17 @@ html, body {
 	backface-visibility: hidden;
 	color: var(--text);
 	touch-action: pan-x pan-y;
-	min-height: 100%;
 	user-select: none;
 	-webkit-user-select: none;
+	-webkit-touch-callout: none;
 }
 html {
 	height: 100%;
 }
 body {
-	min-height: 100%;
 	position: relative;
+	min-height: calc(100% - 2vw - 5px);
+	padding-bottom: calc(2vw + 5px); /* turn margin into body padding so margins don't collapse and mess up #modal-overlay */
 }
 
 #screen-flash-circle {
@@ -373,6 +380,7 @@ h1 a:focus {
 }
 main {
 	margin: calc(5px + 2vw);
+	margin-bottom: 0; /* turn margin into body padding so margins don't collapse and mess up #modal-overlay */
 	display: -webkit-flex;
 	display: flex;
 	/*font-family: domine;*/
@@ -403,6 +411,7 @@ a:hover {
 	font: 15px 'Open Sans';
 	transition-duration: 0.2s;
 	color: var(--text);
+	border-radius: 0;
 }
 [type='text']:focus, [type='password']:focus {
 	/*border: 2px solid #FFD740;*/
@@ -475,7 +484,7 @@ form input, form button {
 	height: 100%;
 	width: 100%;
 	z-index: 999;
-	background: var(--bkg-tertiary);
+	background: var(--bkg-secondary);
 	opacity: 0;
 	transition: opacity 0.3s, visibility 0.3s;
 }

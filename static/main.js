@@ -1,17 +1,6 @@
 //console.log("%cCaution", "font: bold 35pt sans-serif; color: red;");
 //console.log("%cEven though we use a temporary username system and there is not much to lose (e.g., account passwords), pasting text here may give scammers or hackers access to your Chessvars in-browser settings or worse your session id. Your session id could give them the ability to play your games or send messages as 'you'.", "font: 12pt georgia, serif;");
 
-function slideUp(elem, secs) {
-	secs = secs || 0.4;
-	elem.style.transition = 'all '+secs+'s';
-	elem.style.transform = 'scaleY(0)';
-	elem.style.height = '0';
-	elem.style.margin = '0';
-	setTimeout(function() {
-		elem.remove();
-	}, secs*1000);
-};
-
 function validateUsername(name) {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/validate_username?name='+name, false);
@@ -30,6 +19,16 @@ function validateUsername(name) {
 	}
 })();
 addEventListener('load', function() {
+	var modalOverlay = document.getElementById('modal-overlay');
+	function closeNavMenu(e) {
+		e.preventDefault(); // don't fire both events
+		if (document.getElementById('nav-menu').classList.contains('active')) {
+			document.getElementById('nav-menu').classList.remove('active');
+			document.getElementById('modal-overlay').classList.remove('active');
+		}
+	}
+	modalOverlay.addEventListener('mousedown', closeNavMenu);
+	modalOverlay.addEventListener('touchstart', closeNavMenu);
 	document.body.addEventListener('keyup', function(evt) {
 		if (evt.keyCode == 27) { //ESC
 			dismissAlert();
@@ -178,6 +177,7 @@ function acceptGame(gameId) {
 function spectateGame(gameId) {
 	location.href = '/g/'+gameId;
 }
+
 var onAlertDismiss = function() { console.log('No action taken on alert dismiss. (default)'); };
 var proto = location.protocol == 'https:' ? 'wss' : 'ws';
 var socket = new WebSocket(proto+'://'+location.host+'/socket');
@@ -241,7 +241,7 @@ socket.onmessage = function(received) {
 	}
 	if (msgargs[0] == 'gameaccepted' || msgargs[0] == 'gameready') {
 		screenFlash();
-		location.href = '/g/'+msgargs[1];
+		location = '/g/'+msgargs[1];
 	}
 	if (msgargs[0] == 'gameconclusion') {
 		gameConclusion(msgargs[1], msgargs[2], msgargs[3]);

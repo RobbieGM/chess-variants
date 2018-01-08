@@ -126,8 +126,7 @@ class GameOffer(object):
     instances = game_offers
     primary_key = 'game_id'
 
-    def __init__(self, offered_by, variant, minutes,
-                 delay, play_as):
+    def __init__(self, offered_by, variant, minutes, delay, play_as):
         self.offered_by = offered_by
         self.variant = variant
         self.minutes = minutes
@@ -171,7 +170,7 @@ class Game(object):
 
         reason = reason if reason else '(unspecified reason)'
         win_str = 'Game over' # don't mess up too hard on the user end if something goes wrong here
-        if winner == None:
+        if winner is None:
             win_str = 'Draw'
         elif winner == chess.WHITE:
             win_str = 'White wins'
@@ -375,7 +374,7 @@ class MainWebSocket(WebSocket):
                 self.role = tuple(role)
 
             def creategame(variant, mins, secs, color):
-                if not variant in LEGAL_VARIANT_LIST:
+                if variant not in LEGAL_VARIANT_LIST:
                     return
                 if self.user.game_id in games:
                     self.emit('showmessage', '<h3>You are already in a game</h3><p>Please finish the game you are in before you create another game.</p>')
@@ -407,7 +406,7 @@ class MainWebSocket(WebSocket):
                                   '<h2>This game doesn\'t exist anymore.</h2>')
 
             def acceptgame(offer_id):
-                if not offer_id in game_offers:
+                if offer_id not in game_offers:
                     self.emit(
                         'showmessage',
                         '<h3>That game offer is gone</h3><p>The game offer you accepted doesn\'t exist anymore.</p>')
@@ -538,7 +537,6 @@ class Root(object):
             cp.response.cookie['session_token']['expires'] = 0
 
             return cp.lib.static.serve_file(cwd + '/static/choose_username.html')
-            #return main_page_wrap(DYNAMIC_HTML['choose_username'], split_mode=True)
         elif cp.request.method == 'POST':
             if not request_params['username']:
                 raise cp.HTTPError(400)
@@ -558,6 +556,18 @@ class Root(object):
             raise cp.HTTPRedirect('/')
         else:
             raise cp.HTTPError(405)
+
+    @cp.expose
+    def test(self):
+        return main_page_wrap('''<article>
+            <input type="number" id="duration" min="0" max="100" value="50"/><br/>
+            <button onclick="vibrate()">OK</button>
+            <script>
+            vibrate = () => {
+                navigator.vibrate(parseInt(document.getElementById("duration").value));
+            };
+            </script>
+            </article>''')
 
     @cp.expose
     @username_required
@@ -591,7 +601,7 @@ class GamePath(object):
         # print game_id
         # return main_page_wrap('<article><h2>test</h2></article>')
 
-        if not game_id in games:
+        if game_id not in games:
             return main_page_wrap('''<article>
                 <h2>That Game is Gone</h2>
                 <p>The game you requested doesn't exist. It may have ended, or you may have mistyped the URL.</p>
@@ -623,8 +633,7 @@ class GamePath(object):
 
 
 def error_404(status, message, traceback, version):
-    return main_page_wrap(
-        '<article><h2>404 Not Found</h2><p>The page you requested doesn\'t exist.</p></article>')
+    return main_page_wrap('<article><h2>404 Not Found</h2><p>The page you requested doesn\'t exist.</p></article>')
 
 
 cfg = {'/static': {
@@ -638,7 +647,7 @@ cfg = {'/static': {
 #        'tools.caching.on': False,
 #    },
     'global': {
-        'server.socket_host': '127.0.0.1',
+        'server.socket_host': '0.0.0.0',
         'server.socket_port': (int(argv[len(argv) - 1]) if argv[len(argv) - 1].isdigit() else 80),
         'response.timeout': 6000,  # ms
         'error_page.404': error_404,
